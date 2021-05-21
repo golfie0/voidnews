@@ -47,13 +47,14 @@ def get_habr():
             'image': img_list[i],
         }
         habr_list.append(data)
-    time.sleep(300)
-    get_habr()
+    # time.sleep(60)
+    # get_habr()
 
 
-thread = threading.Thread(target=get_habr)
-thread.start()
+# thread = threading.Thread(target=get_habr)
+# thread.start()
 
+get_habr()
 
 def home(req):
     context = {
