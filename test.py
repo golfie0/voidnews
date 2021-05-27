@@ -3,8 +3,8 @@ import requests  # библиотека для http запросов
 import psycopg2
 import datetime
 import re
+from django.shortcuts import render
 
-# надо попробовать избавиться от списков
 habr_links = []
 habr_titles = []
 tproger_links = []
@@ -34,8 +34,6 @@ def add_news(table, titles, links):
 def get_titles(table):
     cursor.execute("""SELECT post_title FROM news_app_post_{} ORDER BY id desc limit 20""".format(table))
     titles = [r[0] for r in cursor.fetchall()]
-    cursor.execute("SELECT post_source FROM news_app_post_{} ORDER BY id desc limit 20".format(table))
-    links = [r[0] for r in cursor.fetchall()]
     return titles
 
 
@@ -72,6 +70,7 @@ def get_habr1():  # парс на один раз для заполнения б
 def get_habr():
     global habr_titles
     global habr_links
+    global habr
     habr = 'https://habr.com/ru/news/'
     req = requests.get(habr).text
     soup = BeautifulSoup(req, 'lxml')
@@ -82,6 +81,14 @@ def get_habr():
     add_news('habr', habr_titles, habr_links)
     habr_titles = get_titles('habr')
     habr_links = get_links('habr')
+    habr = []
+    for i in range(0, len(habr_titles)):
+        data = {
+            'title': habr_titles[i],
+            'link': habr_links[i],
+        }
+
+        habr.append(data)
 
 
 def get_tproger():
@@ -174,7 +181,16 @@ def get_dnews1():
 
 
 get_habr()
-print(habr_titles)
-print(habr_links)
+
+
 cursor.close()
 connection.close()
+
+
+def home(req):
+    context = {
+        'habr_titles': habr_titles,
+        'habr_links': habr_links,
+        'habr': habr
+    }
+    return render(req, 'news_app/home.html', context)

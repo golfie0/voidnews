@@ -29,10 +29,11 @@
           <div class="col-10">
           <table class="table table-hover" style="border-color:#272727; color:#272727">
 
-            {% for news in habr %}
+            {% for new in news %}
             <tr>
               <td style="background-color:#272727">
-          <a target="_blank" href="{{ news.link }}" class="title" style="font-size:22px; color:#FFFFFF">{{ news.title }}</a>
+                  <img src="{{ new.img }}" align="center">
+          <a target="_blank" href="{{ new.source }}" class="title" style="font-size:22px; color:#FFFFFF">{{ new.title }}</a>
           </tr>
             </td>
             {% endfor %}

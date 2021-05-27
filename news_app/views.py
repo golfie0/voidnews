@@ -3,92 +3,66 @@ import requests  # библиотека для http запросов
 import psycopg2
 import datetime
 import re
-from django.shortcuts import render
 
-habr_links = []
-habr_titles = []
+from django.db import IntegrityError
+from django.shortcuts import render
+from django.views.generic.list import ListView
+from .models import Posts
+
 tproger_links = []
 tproger_titles = []
 dnews_links = []
 dnews_titles = []
 
-connection = psycopg2.connect(user='postgres', password='root', host='localhost', port='5432')
-cursor = connection.cursor()
-connection.autocommit = True
+
+# connection = psycopg2.connect(user='postgres', password='root', host='localhost', port='5432')
+# cursor = connection.cursor()
+# connection.autocommit = True
 
 
-def add_news(table, titles, links):
-    for title in range(0, len(titles)):
-        try:
-            cursor.execute("""INSERT INTO news_app_post_{} (post_title, post_source, pub_date) VALUES ('{}', '{}', 
-            '{}')""".format(table, titles[title],
-                            links[title], datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')))
-        except psycopg2.errors.UniqueViolation:
-            pass
-        except psycopg2.errors.InFailedSqlTransaction:
-            pass
-        except psycopg2.errors.StringDataRightTruncation:
-            pass
-
-
-def get_titles(table):
-    cursor.execute("""SELECT post_title FROM news_app_post_{} ORDER BY id desc limit 20""".format(table))
-    titles = [r[0] for r in cursor.fetchall()]
-    return titles
-
-
-def get_links(table):
-    cursor.execute("SELECT post_source FROM news_app_post_{} ORDER BY id desc limit 20".format(table))
-    links = [r[0] for r in cursor.fetchall()]
-    return links
+def add_news(table, title, link):
+    images = {
+        'habr': 'https://www.google.com/s2/favicons?domain=habr.com',
+        'dnews': 'https://www.google.com/s2/favicons?domain=3dnews.ru',
+        'tproger': 'https://www.google.com/s2/favicons?domain=tproger.ru',
+    }
+    title = re.sub('"', '', title)
+    title = re.sub("'", '', title)
+    try:
+        post = Posts.objects.create(title=title, source=link,
+                                    date=datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'), img=images.get(table))
+        post.save(force_insert=True)
+    except psycopg2.errors.StringDataRightTruncation:
+        pass
+    except psycopg2.errors.UniqueViolation:
+        pass
+    except psycopg2.errors.InFailedSqlTransaction:
+        pass
+    except IntegrityError:
+        pass
 
 
 def get_habr1():  # парс на один раз для заполнения бд
-    global habr_titles
     for i in reversed(range(1, 31)):
         habr = 'https://habr.com/ru/news/page{}/'.format(i)
         req = requests.get(habr).text
         soup = BeautifulSoup(req, 'lxml')
         posts = soup.find_all('a', class_='post__title_link')
-        for link in posts:
-            habr_links.append(link.get('href'))
-            habr_titles.append(link.get_text())
-        habr_titles = [re.sub("'", '', i) for i in habr_titles]
-        habr_titles = [re.sub('"', '', i) for i in habr_titles]
-    for title in range(0, len(habr_titles)):
-        try:
-            cursor.execute(
-                """INSERT INTO news_app_post_habr (post_title, post_source, pub_date) VALUES ('{}', '{}', '{}')""".format(
-                    habr_titles[title],
-                    habr_links[title], datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')))
-        except psycopg2.errors.UniqueViolation:
-            pass
-        except psycopg2.errors.InFailedSqlTransaction:
-            pass
+        for title in posts:
+            habr_link = title.get('href')
+            habr_title = title.get_text()
+            add_news('habr', habr_title, habr_link)
 
 
 def get_habr():
-    global habr_titles
-    global habr_links
-    global habr
     habr = 'https://habr.com/ru/news/'
     req = requests.get(habr).text
     soup = BeautifulSoup(req, 'lxml')
     posts = soup.find_all('a', class_='post__title_link')
-    for link in posts:
-        habr_links.append(link.get('href'))
-        habr_titles.append(link.get_text())
-    add_news('habr', habr_titles, habr_links)
-    habr_titles = get_titles('habr')
-    habr_links = get_links('habr')
-    habr = []
-    for i in range(0, len(habr_titles)):
-        data = {
-            'title': habr_titles[i],
-            'link': habr_links[i],
-        }
-
-        habr.append(data)
+    for title in posts:
+        habr_link = title.get('href')
+        habr_title = title.get_text()
+        add_news('habr', habr_title, habr_link)
 
 
 def get_tproger():
@@ -103,9 +77,8 @@ def get_tproger():
     posts = soup.find_all('h2', class_='entry-title')
     for title in posts:
         tproger_titles.append(title.get_text('h2'))
-    add_news('tproger', tproger_titles, tproger_links)
-    tproger_titles = get_titles('tproger')
-    tproger_links = get_links('tproger')
+    for i in range(0, len(tproger_titles)):
+        add_news('tproger', tproger_titles[i], tproger_links[i])
 
 
 def get_tproger1():
@@ -122,18 +95,8 @@ def get_tproger1():
             tproger_titles.append(title.get_text('h2'))
         tproger_titles = [re.sub("'", '', i) for i in tproger_titles]
         tproger_titles = [re.sub('"', '', i) for i in tproger_titles]
-    for title in range(0, len(tproger_titles)):
-        try:
-            cursor.execute(
-                """INSERT INTO news_app_post_tproger (post_title, post_source, pub_date) VALUES ('{}', '{}', '{}')""".format(
-                    tproger_titles[title],
-                    tproger_links[title], datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')))
-        except psycopg2.errors.StringDataRightTruncation:
-            pass
-        except psycopg2.errors.UniqueViolation:
-            pass
-        except psycopg2.errors.InFailedSqlTransaction:
-            pass
+    for i in range(0, len(tproger_titles)):
+        add_news('tproger', tproger_titles[i], tproger_links[i])
 
 
 def get_dnews():
@@ -144,12 +107,10 @@ def get_dnews():
     soup = BeautifulSoup(req, 'lxml')
     posts = soup.find_all('a', class_='entry-header')
     for title in posts:
-        dnews_titles.append(title.get_text('h1'))
-        dnews_links.append(title.get('href'))
-    dnews_links = ['https://3dnews.ru/' + dnew for dnew in dnews_links]
-    add_news('dnews', dnews_titles, dnews_links)
-    dnews_titles = get_titles('dnews')
-    dnews_links = get_links('dnews')
+        dnews_title = title.get_text('h1')
+        dnews_link = title.get('href')
+        dnews_link = 'https://3dnews.ru/' + dnews_link
+        add_news('dnews', dnews_title, dnews_link)
 
 
 def get_dnews1():
@@ -161,36 +122,27 @@ def get_dnews1():
         soup = BeautifulSoup(req, 'lxml')
         posts = soup.find_all('a', class_='entry-header')
         for title in posts:
-            dnews_titles.append(title.get_text('h1'))
-            dnews_links.append(title.get('href'))
-    dnews_links = ['https://3dnews.ru/' + dnew for dnew in dnews_links]
-    dnews_titles = [re.sub("'", '', i) for i in dnews_titles]
-    dnews_titles = [re.sub('"', '', i) for i in dnews_titles]
-    for title in range(0, len(dnews_titles)):
-        try:
-            cursor.execute(
-                """INSERT INTO news_app_post_dnews (post_title, post_source, pub_date) VALUES ('{}', '{}', '{}')""".format(
-                    dnews_titles[title],
-                    dnews_links[title], datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')))
-        except psycopg2.errors.StringDataRightTruncation:
-            pass
-        except psycopg2.errors.UniqueViolation:
-            pass
-        except psycopg2.errors.InFailedSqlTransaction:
-            pass
+            dnews_title = title.get_text('h1')
+            dnews_link = title.get('href')
+            dnews_link = 'https://3dnews.ru/' + dnews_link
+            add_news('dnews', dnews_title, dnews_link)
 
 
-get_habr()
-
-
-cursor.close()
-connection.close()
+# cursor.close()
+# connection.close()
 
 
 def home(req):
+    news = Posts.objects.order_by('date')
+
+    def title_check():
+        for new in news:
+            if len(new.title) > 94:
+                new.title = (new.title[:85] + '..')
+
+    title_check()
+    news = news.order_by('-date')
     context = {
-        'habr_titles': habr_titles,
-        'habr_links': habr_links,
-        'habr': habr
+        'news': news,
     }
     return render(req, 'news_app/home.html', context)
