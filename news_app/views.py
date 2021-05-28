@@ -1,23 +1,16 @@
+import requests
 from bs4 import BeautifulSoup
 import requests  # библиотека для http запросов
-import psycopg2
 import datetime
 import re
 
+from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.db import IntegrityError
 from django.shortcuts import render
-from django.views.generic.list import ListView
 from .models import Posts
 
 tproger_links = []
 tproger_titles = []
-dnews_links = []
-dnews_titles = []
-
-
-# connection = psycopg2.connect(user='postgres', password='root', host='localhost', port='5432')
-# cursor = connection.cursor()
-# connection.autocommit = True
 
 
 def add_news(table, title, link):
@@ -32,12 +25,6 @@ def add_news(table, title, link):
         post = Posts.objects.create(title=title, source=link,
                                     date=datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'), img=images.get(table))
         post.save(force_insert=True)
-    except psycopg2.errors.StringDataRightTruncation:
-        pass
-    except psycopg2.errors.UniqueViolation:
-        pass
-    except psycopg2.errors.InFailedSqlTransaction:
-        pass
     except IntegrityError:
         pass
 
@@ -100,8 +87,6 @@ def get_tproger1():
 
 
 def get_dnews():
-    global dnews_titles
-    global dnews_links
     dnews = 'https://3dnews.ru/news/'
     req = requests.get(dnews).text
     soup = BeautifulSoup(req, 'lxml')
@@ -114,8 +99,6 @@ def get_dnews():
 
 
 def get_dnews1():
-    global dnews_links
-    global dnews_titles
     for i in reversed(range(1, 101)):
         dnews = 'https://3dnews.ru/news/page-{}.html'.format(i)
         req = requests.get(dnews).text
@@ -128,21 +111,27 @@ def get_dnews1():
             add_news('dnews', dnews_title, dnews_link)
 
 
-# cursor.close()
-# connection.close()
-
-
 def home(req):
-    news = Posts.objects.order_by('date')
+    news_list = Posts.objects.order_by('-date')
+    paginator = Paginator(news_list, 40)
+    page = req.GET.get('page')
+    try:
+        news = paginator.page(page)
+    except PageNotAnInteger:
+        news = paginator.page(1)
+    except EmptyPage:
+        news = paginator.page(paginator.num_pages)
 
     def title_check():
         for new in news:
-            if len(new.title) > 94:
+            if len(new.title) >= 90:
                 new.title = (new.title[:85] + '..')
 
     title_check()
-    news = news.order_by('-date')
+
     context = {
+        'news_list': news_list,
         'news': news,
+        'page': page,
     }
     return render(req, 'news_app/home.html', context)
