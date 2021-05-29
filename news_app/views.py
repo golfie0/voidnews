@@ -113,7 +113,7 @@ def get_dnews1():
 
 
 def home(req):
-    test = request.GET.get('array')
+    test = req.GET['array']
     logging.info(test)
     news_list = Posts.objects.order_by('-date')
 
