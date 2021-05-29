@@ -124,10 +124,14 @@ def home(req):
 
     def title_check():
         for new in news:
-            if len(new.title) >= 90:
-                new.title = (new.title[:85] + '..')
+            if len(new.title) >= 100:
+                new.title = (new.title[:97] + '..')
 
     title_check()
+    if req.GET.get('refresh'):
+        get_habr()
+        get_dnews()
+        get_tproger()
 
     context = {
         'news_list': news_list,
