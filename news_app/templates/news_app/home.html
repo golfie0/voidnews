@@ -135,9 +135,9 @@
   $('.form-check-input').click(()=>{
     $('.form-check-input').each((i,el) => {
       if(el.checked){
-        console.log(`Отмечен ${el.value}`);
+        console.log(`Отмечен ${el.val()}`);
       }else{
-        console.log(`Не отмечен ${el.value}`);
+        console.log(`Не отмечен ${el.val()}`);
       }
     });
   })
