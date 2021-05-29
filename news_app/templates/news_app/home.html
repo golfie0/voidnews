@@ -134,7 +134,7 @@
 <script>
   $('.form-check-input').click(()=>{
     $('.form-check-input:checkbox:checked').each( () => {
-      let sThisVal = (this.checked ? $(this).val() : "");
+      let sThisVal = $(this).val()
       console.log(sThisVal);
     });
   })
