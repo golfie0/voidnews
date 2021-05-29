@@ -113,6 +113,7 @@ def get_dnews1():
 
 def home(req):
     news_list = Posts.objects.order_by('-date')
+    
     paginator = Paginator(news_list, 40)
     page = req.GET.get('page')
     try:

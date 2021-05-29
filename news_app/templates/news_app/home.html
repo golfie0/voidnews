@@ -64,25 +64,35 @@
   // If the checkbox is checked, display the output text
   if (checkBox.checked == true ){
     for (i = 0; i < (text.length) ; i++){
-    text[i].style.display = "";}}
-    else {
+      text[i].style.display = "";}
+    }
+  else {
     for (i = 0; i < text.length; i++){
-        text[i].style.display = "none";
+      text[i].style.display = "none";
     }
   }
 }
+
+
+$('.form-check-input').each(el => {
+  console.log(el);
+});
+
+
+
+
                     </script>
                     <div class="form-check">
-                    <input class="form-check-input" type="checkbox" value="" id="habr"style="height:30px;width:30px;" onclick="Habr()" checked>
-                    <label class="form-check-label" for="habr" style="font-size:22px;padding-left:.4rem;padding-top:.2rem;color:#FFFFFF">habr.com</label>
+                      <input class="form-check-input" type="checkbox" value="" id="habr"style="height:30px;width:30px;" value="habr">
+                      <label class="form-check-label" for="habr" style="font-size:22px;padding-left:.4rem;padding-top:.2rem;color:#FFFFFF" value="habr">habr.com</label>
                     </div>
                     <div class="form-check">
-                    <input class="form-check-input" type="checkbox" value="" id="tproger"style="height:30px;width:30px;" onclick="tproger()">
-                    <label class="form-check-label" for="tproger" style="font-size:22px;padding-left:.4rem;padding-top:.2rem;color:#FFFFFF">tproger.ru</label>
+                      <input class="form-check-input" type="checkbox" value="" id="tproger"style="height:30px;width:30px;" value="tproger">
+                      <label class="form-check-label" for="tproger" style="font-size:22px;padding-left:.4rem;padding-top:.2rem;color:#FFFFFF" >tproger.ru</label>
                     </div>
                     <div class="form-check">
-                    <input class="form-check-input" type="checkbox" value="" id="dnews"style="height:30px;width:30px;" onclick="dnews">
-                    <label class="form-check-label" for="dnews" style="font-size:22px;padding-left:.4rem;padding-top:.2rem;color:#FFFFFF">3dnews.ru</label>
+                      <input class="form-check-input" type="checkbox" value="" id="dnews"style="height:30px;width:30px;" value="dnews" >
+                      <label class="form-check-label" for="dnews" style="font-size:22px;padding-left:.4rem;padding-top:.2rem;color:#FFFFFF">3dnews.ru</label>
                     </div>
           </div>
           <div class="container" align="center">
