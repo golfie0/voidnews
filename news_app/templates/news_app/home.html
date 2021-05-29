@@ -133,9 +133,8 @@
   </div>
 <script>
   $('.form-check-input').click(()=>{
-    $('.form-check-input:checkbox:checked').each( () => {
-      let sThisVal = $(this).val()
-      console.log(sThisVal);
+    $('.form-check-input:checkbox:checked').each( (i,el) => {
+      console.log($(this).val());
     });
   })
 </script>
