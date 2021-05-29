@@ -113,16 +113,23 @@ def get_dnews1():
 
 
 def home(req):
-    get_habr()
-    get_dnews()
-    get_tproger()
+    #get_habr()
+    #get_dnews()
+    #get_tproger()
     habr_enable = req.GET.get('habr')
     tproger_enable = req.GET.get('tproger')
     dnews_enable = req.GET.get('dnews')
     print(habr_enable)
     print(tproger_enable)
     print(dnews_enable)
-    news_list = Posts.objects.order_by('-date')
+    news_list = Posts.objects.order_by('-id')
+
+    if habr_enable == '0':
+        news_list = news_list.exclude(source__regex='https://habr.com/.*')
+    if dnews_enable == '0':
+        news_list = news_list.exclude(source__regex='https://3dnews.ru/.*')
+    if tproger_enable == '0':
+        news_list = news_list.exclude(source__regex='https://tproger.ru/.*')
 
     paginator = Paginator(news_list, 40)
     page = req.GET.get('page')
@@ -135,8 +142,8 @@ def home(req):
 
     def title_check():
         for new in news:
-            if len(new.title) >= 100:
-                new.title = (new.title[:97] + '..')
+            if len(new.title) >= 90:
+                new.title = (new.title[:88] + '..')
 
     title_check()
 

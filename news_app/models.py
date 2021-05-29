@@ -8,4 +8,4 @@ class Posts(models.Model):
     img = models.URLField('favicon', max_length=500, null=True)
 
     def __str__(self):
-        return self.title
+        return self.source

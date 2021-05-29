@@ -1,13 +1,19 @@
-function Habr() {
-  // Get the checkbox
-  var checkBox = document.getElementById("habr");
-  // Get the output text
-  var text = document.getElementById("titles");
+function Boxes(){
+ const params = new URLSearchParams(window.location.search)
+  var habrCheck = document.getElementById('habr')
+  var tprogerCheck = document.getElementById('tproger')
+  var dnewsCheck = document.getElementById('dnews')
 
-  // If the checkbox is checked, display the output text
-  if (checkBox.checked == true){
-    text.style.display = "block";
-  } else {
-    text.style.display = "none";
+  switch (params.get('habr')){
+        case 0: habrCheck.checked = true;
+        case 1: habrCheck.checked = false;
+  }
+    switch (params.get('tproger')){
+        case 0: tprogerCheck.checked = true;
+        case 1: tprogerCheck.checked = false;
+  }
+    switch (params.get('dnews')){
+        case 0: dnewsCheck.checked = true;
+        case 1: dnewsCheck.checked = false;
   }
 }

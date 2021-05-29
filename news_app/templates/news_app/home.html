@@ -20,7 +20,7 @@
             <div class="row" style="--bs-gutter-x:0rem">
                 <div class="col-5" style="color:white; background-color:#272727; margin-bottom:0rem; padding-right:0px; padding:0px" align="right">
                     <form action="#" method="get">
-                    <button type="button" class="btn btn-dark" name="refresh" onclick="window.location.replace(`/`)">Обновить</button>
+                    <button type="button" class="btn btn-dark" name="refresh" onclick="window.location.reload()">Обновить</button>
                     </form>
                 </div>
 
@@ -52,44 +52,17 @@
               </table>
               </div>
                 <div class="col-3" style="--bs-gutter-x:2rem; --bs-gutter-y:.5rem;">
-                    <script>
-                        function Habr() {
-  // Get the checkbox
-  var checkBox = document.getElementById("habr");
-  // Get the output text
-  var text = document.getElementsByClassName("td");
-  var thumbnail = document.getElementsByClassName("thumbnail").src;
-  console.log(thumbnail);
 
-  // If the checkbox is checked, display the output text
-  if (checkBox.checked == true ){
-    for (i = 0; i < (text.length) ; i++){
-      text[i].style.display = "";}
-    }
-  else {
-    for (i = 0; i < text.length; i++){
-      text[i].style.display = "none";
-    }
-  }
-}
-
-
-
-
-
-
-
-                    </script>
                     <div class="form-check">
-                      <input class="form-check-input" type="checkbox" value="habr" id="habr"style="height:30px;width:30px;">
+                      <input class="form-check-input" type="checkbox" value="habr" id="habr"style="height:30px;width:30px;" checked="none">
                       <label class="form-check-label" for="habr" style="font-size:22px;padding-left:.4rem;padding-top:.2rem;color:#FFFFFF" value="habr">habr.com</label>
                     </div>
                     <div class="form-check">
-                      <input class="form-check-input" type="checkbox" value="tproger" id="tproger"style="height:30px;width:30px;" >
+                      <input class="form-check-input" type="checkbox" value="tproger" id="tproger"style="height:30px;width:30px;" checked="checked" >
                       <label class="form-check-label" for="tproger" style="font-size:22px;padding-left:.4rem;padding-top:.2rem;color:#FFFFFF" >tproger.ru</label>
                     </div>
                     <div class="form-check">
-                      <input class="form-check-input" type="checkbox" value="dnews" id="dnews"style="height:30px;width:30px;"  >
+                      <input class="form-check-input" type="checkbox" value="dnews" id="dnews"style="height:30px;width:30px;checked:true" >
                       <label class="form-check-label" for="dnews" style="font-size:22px;padding-left:.4rem;padding-top:.2rem;color:#FFFFFF">3dnews.ru</label>
                     </div>
           </div>
@@ -109,7 +82,7 @@
                           {% for n in news.paginator.page_range %}
                           {% if news.number == n %}
                           <li class="page-item active">
-                              <span class="page-link"style="background-color:#f4ae95; color:#FFFFFF; border:2px solid; border-color:#f4ae95; padding:.375rem 1.5rem; ">{{ n }}<span class="sr-only"></span></span>
+                              <span class="page-link" style="background-color:#f4ae95; color:#FFFFFF; border:2px solid; border-color:#f4ae95; padding:.375rem 1.5rem; ">{{ n }}<span class="sr-only"></span></span>
                           </li>
                           {% elif n > news.number|add:'-4' and n < news.number|add:'4' %}
                           <li class="page-item">
@@ -141,8 +114,28 @@ $('.form-check-input').click(()=>{
         params = params + `${$(elem).val()}=0&`
       }
     });
-    window.location.replace(`/${params}`);
+    window.location.replace(`/${params}page={{ news.number}}`);
   })
+
+  const params = new URLSearchParams(window.location.search)
+  var habrCheck = document.getElementById('habr')
+  var tprogerCheck = document.getElementById('tproger')
+  var dnewsCheck = document.getElementById('dnews')
+  console.log(params.get('habr'));
+  console.log(params.get('tproger'));
+  console.log(params.get('dnews'));
+  if (params.get('habr') == 1) {
+    habrCheck.checked = true;}
+  else{
+    habrCheck.checked = false;}
+  if (params.get('tproger') == 1) {
+    tprogerCheck.checked = true;}
+  else{
+    tprogerCheck.checked = false;}
+  if (params.get('dnews') == 1) {
+    dnewsCheck.checked = true;}
+  else{
+    dnewsCheck.checked = false;}
 </script>
   </body>
 </html>
