@@ -113,15 +113,12 @@ def get_dnews1():
 
 
 def home(req):
-    #get_habr()
-    #get_dnews()
-    #get_tproger()
+    get_habr()
+    get_dnews()
+    get_tproger()
     habr_enable = req.GET.get('habr')
     tproger_enable = req.GET.get('tproger')
     dnews_enable = req.GET.get('dnews')
-    print(habr_enable)
-    print(tproger_enable)
-    print(dnews_enable)
     news_list = Posts.objects.order_by('-id')
 
     if habr_enable == '0':
@@ -151,5 +148,8 @@ def home(req):
         'news_list': news_list,
         'news': news,
         'page': page,
+        'habr_enable': habr_enable,
+        'tproger_enable': tproger_enable,
+        'dnews_enable': dnews_enable,
     }
     return render(req, 'news_app/home.html', context)

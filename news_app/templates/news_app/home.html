@@ -1,6 +1,6 @@
 <!doctype html>
 {% load static %}
-<html lang="ru" xmlns="http://www.w3.org/1999/html">
+<html lang="ru" xmlns="http://www.w3.org/1999/html" style="background-color:#121212">
   <head>
     <meta charset="utf-8">
     <link rel="icon" href="{% static 'logo.png' %}">
@@ -20,7 +20,7 @@
             <div class="row" style="--bs-gutter-x:0rem">
                 <div class="col-5" style="color:white; background-color:#272727; margin-bottom:0rem; padding-right:0px; padding:0px" align="right">
                     <form action="#" method="get">
-                    <button type="button" class="btn btn-dark" name="refresh" onclick="window.location.reload()">Обновить</button>
+                    <button type="button" class="btn btn-dark" name="refresh" onclick="window.location.reload()" style="display:none">Обновить</button>
                     </form>
                 </div>
 
@@ -72,7 +72,7 @@
                       <ul class="pagination justify-content-center">
                           {% if news.has_previous %}
                           <li class="page-item">
-                              <a class="page-link" href="?page=1" aria-label="Previous" style="background-color:#272727; color:#FFFFFF; border:2px solid; border-color:#f4ae95; padding:.375rem 1.4rem;">
+                              <a class="page-link" href="?habr={{ habr_enable }}&tproger={{ tproger_enable }}&dnews={{ dnews_enable }}&page=1" aria-label="Previous" style="background-color:#272727; color:#FFFFFF; border:2px solid; border-color:#f4ae95; padding:.375rem 1.4rem;">
                                 <span aria-hidden="true">&laquo;</span>
                                 <span class="sr-only"></span>
                               </a>
@@ -86,14 +86,14 @@
                           </li>
                           {% elif n > news.number|add:'-4' and n < news.number|add:'4' %}
                           <li class="page-item">
-                              <a class="page-link " href="?page={{ n }}" style="background-color:#272727; color:#FFFFFF; border:2px solid; border-color:#f4ae95; padding:.375rem 1.4rem;" >{{ n }}</a>
+                              <a class="page-link " href="?habr={{ habr_enable }}&tproger={{ tproger_enable }}&dnews={{ dnews_enable }}&page={{ n }}" style="background-color:#272727; color:#FFFFFF; border:2px solid; border-color:#f4ae95; padding:.375rem 1.4rem;" >{{ n }}</a>
                           </li>
                           {% endif %}
                           {% endfor %}
 
                           {% if news.has_next %}
                           <li class="page-item">
-                            <a class="page-link" href="?page={{ news.paginator.num_pages }}" aria-label="далее" style="background-color:#272727; color:#FFFFFF;border:2px solid; border-color:#f4ae95; padding:.375rem 1.4rem; ">
+                            <a class="page-link" href="?habr={{ habr_enable }}&tproger={{ tproger_enable }}&dnews={{ dnews_enable }}&page={{ news.paginator.num_pages }}" aria-label="далее" style="background-color:#272727; color:#FFFFFF;border:2px solid; border-color:#f4ae95; padding:.375rem 1.4rem; ">
                                 <span class="sr-only"></span>
                                 <span aria-hidden="true">&raquo;</span>
                             </a>
@@ -116,6 +116,10 @@ $('.form-check-input').click(()=>{
     });
     window.location.replace(`/${params}page={{ news.number}}`);
   })
+  if (window.location.href == 'http://127.0.0.1:8000/'){
+     window.location.replace('http://127.0.0.1:8000/?habr=1&tproger=1&dnews=1&page=1')
+  }
+
 
   const params = new URLSearchParams(window.location.search)
   var habrCheck = document.getElementById('habr')
