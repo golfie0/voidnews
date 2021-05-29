@@ -20,7 +20,7 @@
             <div class="row" style="--bs-gutter-x:0rem">
                 <div class="col-5" style="color:white; background-color:#272727; margin-bottom:0rem; padding-right:0px; padding:0px" align="right">
                     <form action="#" method="get">
-                    <button type="button" class="btn btn-dark" name="refresh">Обновить</button>
+                    <button type="button" class="btn btn-dark" name="refresh" onclick="window.location.replace(`/`)">Обновить</button>
                     </form>
                 </div>
 
@@ -132,11 +132,16 @@
           </div>
   </div>
 <script>
-  $('.form-check-input').click(()=>{
-    let enable = []
-    $('.form-check-input:checkbox:checked').each( (i,el) => {
-      
+$('.form-check-input').click(()=>{
+    let params = '?'
+    $('.form-check-input:checkbox').each( (i,elem) => {
+      if(elem.checked){
+        params = params + `${$(elem).val()}=1&`
+      }else{
+        params = params + `${$(elem).val()}=0&`
+      }
     });
+    window.location.replace(`/${params}`);
   })
 </script>
   </body>

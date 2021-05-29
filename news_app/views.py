@@ -113,8 +113,15 @@ def get_dnews1():
 
 
 def home(req):
-    test = req.GET['array']
-    logging.info(test)
+    get_habr()
+    get_dnews()
+    get_tproger()
+    habr_enable = req.GET.get('habr')
+    tproger_enable = req.GET.get('tproger')
+    dnews_enable = req.GET.get('dnews')
+    print(habr_enable)
+    print(tproger_enable)
+    print(dnews_enable)
     news_list = Posts.objects.order_by('-date')
 
     paginator = Paginator(news_list, 40)
@@ -132,10 +139,6 @@ def home(req):
                 new.title = (new.title[:97] + '..')
 
     title_check()
-    if req.GET.get('refresh'):
-        get_habr()
-        get_dnews()
-        get_tproger()
 
     context = {
         'news_list': news_list,
