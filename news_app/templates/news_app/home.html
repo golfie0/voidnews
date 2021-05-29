@@ -134,7 +134,11 @@
 <script>
   $('.form-check-input').click(()=>{
     $('.form-check-input').each((i,el) => {
-      console.log(el.checked);
+      if(el.checked){
+        console.log(`Отмечен ${el.name}`);
+      }else{
+        console.log(`Не отмечен ${el.name}`);
+      }
     });
   })
 </script>
