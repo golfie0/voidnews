@@ -3,6 +3,7 @@ from bs4 import BeautifulSoup
 import requests  # библиотека для http запросов
 import datetime
 import re
+import logging
 
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.db import IntegrityError
@@ -112,8 +113,10 @@ def get_dnews1():
 
 
 def home(req):
+    test = request.GET.get('array')
+    logging.info(test)
     news_list = Posts.objects.order_by('-date')
-    
+
     paginator = Paginator(news_list, 40)
     page = req.GET.get('page')
     try:
